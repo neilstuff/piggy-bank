@@ -1,0 +1,160 @@
+<!doctype html>
+<html>
+
+<head>
+    <meta charset="utf-8">
+    <link rel="stylesheet" href="node_modules/@fortawesome/fontawesome-free/css/all.css" />
+    <link rel="stylesheet" href="node_modules/jquery/dist/jquery.min.js" />
+    <link rel="stylesheet" href="assets/styles/modal.css">
+    <link rel="stylesheet" href="assets/styles/bubble.css">
+    <link rel="stylesheet" href="assets/styles/card.css">
+    <link rel="stylesheet" href="assets/styles/treeview.css">
+    <link rel="stylesheet" href="assets/styles/main.css">
+    <link rel="stylesheet" href="assets/styles/datepickr.css">
+
+    <script src="node_modules/jquery/dist/jquery.min.js"></script>
+    <script src="assets/javascripts/util/sdrag.js"></script>
+    <script src="assets/javascripts/util/treeview.js"></script>
+    <script src="assets/javascripts/util/datepickr.js"></script>
+    <script src="assets/javascripts/util/dateformatter.js"></script>
+    <script src="assets/javascripts/util/currency.js"></script>
+
+    <script type="module" src="assets/javascripts/main.js"></script>
+
+    <script>
+        window.$ = window.jQuery = require("jquery");
+    </script>
+
+    <script type="text/template" data-template="card-item">
+        <div id="card-${id}" class="card" style="position:relative;" draggable="true" ondragstart="$(this).Drag(event)">
+            <div class="card-main" ondragover="$(this).OnCardDrop(event)">
+                <div style="position:relative; color:black;">
+                    <div class="far fa-edit fa-3x bottom-icon menu-item"></div>
+                </div>
+                <div style="font-size:12px; font-family:Arial, Helvetica, sans-serif; position:absolute; top:5px; bottom:0px; left:45px;">
+                    <input style="font-size:12px; width:80%; margin-top:2px; margin-bottom:5px; border:none; border-bottom: 1px dashed rgba(0,0,0, 0.2);  outline: none;" value="${merchant}" placeholder="merchant" oninput="$(this).OnInput('merchant', '${id}', this.value)"
+                    />
+                    <input type="text" name="currency-field" style="font-size:12px; width:80%; border:none; border-bottom: 1px dashed rgba(0,0,0, 0.2);  outline: none; margin-bottom:5px;" id="currency-field" pattern="^\$\d{1,3}(,\d{3})*(\.\d+)?$" value="${amount}" data-type="currency"
+                        placeholder="$0.0" oninput="$(this).OnInput('amount', '${id}', this.value)" />
+                </div>
+                <div style="position:relative; margin-top:26px; left:5px; font-size:8px; font-family:Arial, Helvetica, sans-serif; ">
+                    <input id="date-${id}" style="font-size:9px; width:80px; border: none; outline: none;" value="${date}" />
+                </div>
+                <div style="position:absolute; top:3px; right:3px; color:black;">
+                    <div style="font-size:14px;" class="far fa-window-close fa-1x bottom-icon menu-item" onclick="$(this).Close('#card-${id}')"></div>
+                </div>
+            </div>
+        </div>
+    </script>
+</head>
+
+<body style="font-family:Arial, Helvetica, sans-serif; font-size:10px; overflow:hidden;">
+    <div class="model" id="dialog-help" style="display:none">
+        <div class="modal-blocker"></div>
+        <div style="position:absolute; padding:120px; top:0px; bottom:0px; left:0px; right:0px;">
+            <div class="modal-content" style="margin-top:40px; width:540px;">
+                <div class="modal-header" style="background-color: rgba(0,0,0,1.0)">
+                    <span class="close" id="close">&times;</span>
+                    <h2 id="dialog_title">Editor Commands</h2>
+                </div>
+                <div class="modal-body" id="text" style="background: rgba(0,0,0,0.0.5); height:400px;">
+                    <div class="modal-scroll-panel" style="position:absolute; top:50px; bottom:36px; left:0px; right:0px; overflow:auto; margin:10px;">
+                        <h2>Keyboard Shortcuts</h2>
+                        <p>Below is a list of the most important keystrokes supported by <b>Piggy Bank</b> and its features:</p>
+                        <style>
+                            .keyboard-shortcuts th {
+                                text-align: center;
+                            }
+                            
+                            .keyboard-shortcuts td:nth-of-type(1) {
+                                text-align: right;
+                            }
+                            
+                            .keyboard-shortcuts td:nth-of-type(2),
+                            .keyboard-shortcuts td:nth-of-type(3) {
+                                width: 30%;
+                            }
+                        </style>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="display-area" style="overflow:hidden;">
+        <div id="comment-box" class="bubble right" style="position:absolute; right:60px; top:40px; width:180px; height:90px; display:none;">
+            <span class="bubble-close" id="close-comment-box">&times;</span>
+            <textarea id="comment-text" rows="6" cols="26" style="resize: none; border-color: rgba(0, 0, 0, 1.0); border-style: dotted; background-color: #ffff20; font-family:Arial, Helvetica, sans-serif; font-size:12px;"></textarea>
+        </div>
+
+        <div id="format-box" class="bubble left" style="position:absolute; left:60px; top:150px; width:160px; height:40px; display:none;">
+            <span class="bubble-close" id="close-format-box">&times;</span>
+            <div style="position:absolute; font-size:12px; top:10px; left:10px; width:125px; color:black;">
+                <label>Page Footer</label>
+            </div>
+            <div style="position:absolute; top:28px; left:10px; width:125px; font-size:18px;">
+                <input id="footer" type="text"></input>
+            </div>
+            <div style="position:absolute; bottom:55px; left:110px;">
+                <a id="accept-format" style="position:absolute; top:35px; left:53px; color: rgba(110, 110, 110, 0.8); font-size:14px;" class="fa fa-check fa-1x bottom-icon menu-item"></a>
+                <a id="cancel-format" style="position:absolute; top:35px; left:73px; color: rgba(110, 110, 110, 0.8); font-size:14px;" class="fa fa-times fa-1x bottom-icon menu-item"></a>
+            </div>
+        </div>
+
+        <div style="position:absolute; left:0px; right:0px; top:0px; height:30px; -webkit-app-region: drag;">
+            <div class="header" style="position:absolute; top:-10px; left:45px; right:10px;">
+                <p>Piggy&nbsp;Bank</p>
+            </div>
+
+            <div style="position:absolute; top:2px; left:10px; font-size:16px; font-weight: bold;">
+                <img src="assets/images/piggy-bank.png" style="top:-5px; width:28px; height:28px;"></img>
+            </div>
+
+            <div id="toolbar" style="position: absolute; top:5px; right:0px; padding-left:5px;">
+                <button class="button fas fa-minus fa-1x top-icon" id="window-minimize" style="-webkit-app-region: no-drag; margin-left:2px; font-size:12px; width:18px; height:18px;"></button>
+                <button class="button far fa-square fa-1x top-icon" id="window-maximize" style="-webkit-app-region: no-drag; margin-left:2px; font-size:12px; width:18px; height:18px;"></button>
+                <button class="button fas fa-times fa-1x top-icon" id="quit" style="-webkit-app-region: no-drag; margin-left:2px; font-size:12px; width:18px; height:18px;"></button>
+            </div>
+        </div>
+
+        <div style="position:absolute; top:35px; left:10px; width:35px; bottom:10px; border: 1px solid rgba(0,0,0, 0.2); padding-top:10px; font-size:18px;">
+            <a id="new" style="position:absolute; left:10px;" class="far fa-file fa-1x bottom-icon menu-item"></a>
+            <p style="font-size: 8px;">&nbsp;</p>
+            <a id="open" style="position:absolute; left:10px;" class="far fa-folder-open fa-1x bottom-icon menu-item"></a>
+            <p style="font-size: 10px;">&nbsp;</p>
+            <a id="save" style="position:absolute; left:10px;" class="far fa-save fa-1x bottom-icon menu-item"></a>
+            <p style="font-size: 12px;">&nbsp;</p>
+            <a id="print" style="position:absolute; left:10px;" class="fa fa-print fa-1x bottom-icon menu-item"></a>
+            <p style="font-size: 12px; ">&nbsp;</p>
+            <p style="font-size: 4px; border-top: 1px solid rgba(0,0,0, 0.2);">&nbsp;</p>
+            <a id="help" style="position:absolute; left:10px; bottom:10px;" class="far fa-question-circle fa-1x bottom-icon menu-item"></a>
+        </div>
+        <div id="container" style="position:absolute; top:35px; left:55px; width:280px; bottom:10px; border: 1px solid rgba(0,0,0, 0.2); overflow:auto;">
+            <div id="placeholder" style="position:absolute; display:inline-block; top:10px; left:10px; right:0px; bottom:10px; font-size:12px; ">
+            </div>
+        </div>
+        <div id="separator" style="position:absolute; top:35px; left:335px; width:8px; bottom:20px; font-size:14px; overflow:hidden; cursor: col-resize"></div>
+        <div id="receipts" style="position:absolute; top:35px; left:345px; right:55px; bottom:10px; font-size:14px; border: 1px solid rgba(0,0,0, 0.2); overflow:auto;">
+            <div id="receipt-container" class="mainbox">
+            </div>
+        </div>
+        <div style="position:absolute; top:35px; right:10px; width:35px; bottom:10px; border: 1px solid rgba(0,0,0, 0.2); padding-top:10px; font-size:18px;">
+            <a id="add-receipt" style="font-size: 23px; position:absolute; top:8px; left:6px; color: rgba(110, 110, 110, 0.8)" class="fa fa-plus-circle fa-1x bottom-icon menu-item"></a>
+            <p style="font-size: 14px; border-bottom: 1px solid rgba(0,0,0, 0.2);">&nbsp;</p>
+            <a id="marker-0" style="position:absolute; left:12px; color: rgba(0, 0, 0, 0.8); font-size:14px;" class="fa fa-circle fa-1x bottom-icon menu-item" draggable="true"></a>
+            <p style="font-size: 10px;">&nbsp;</p>
+            <a id="marker-1" style="position:absolute; left:12px; color: rgba(255, 0, 0, 0.8); font-size:14px;" class="fa fa-circle fa-1x bottom-icon menu-item" draggable="true"></a>
+            <p style="font-size: 10px;">&nbsp;</p>
+            <a id="marker-2" style="position:absolute; left:12px; color: rgba(0, 255, 0, 0.8); font-size:14px;" class="fa fa-circle fa-1x bottom-icon menu-item" draggable="true"></a>
+            <p style="font-size: 10px;">&nbsp;</p>
+            <a id="marker-3" style="position:absolute; left:12px; color: rgba(0, 0, 255, 0.8); font-size:14px;" class="fa fa-circle fa-1x bottom-icon menu-item" draggable="true"></a>
+            <p style="font-size: 10px;">&nbsp;</p>
+            <a id="marker-4" style="position:absolute; left:12px; color: rgba(110, 110, 110, 0.8); font-size:14px;" class="fa fa-circle fa-1x bottom-icon menu-item" draggable="true"></a>
+        </div>
+    </div>
+
+    <div id="print-area" class="print-area">
+    </div>
+</body>
+
+</html>

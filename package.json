@@ -1,0 +1,44 @@
+{
+    "name": "piggy-bank",
+    "version": "1.0.0",
+    "description": "Piggy Bank",
+    "main": "main.js",
+    "author": "thesourorange",
+    "license": "CC0-1.0",
+    "scripts": {
+        "pack": "electron-builder --dir",
+        "dist": "electron-builder",
+        "start": "electron ."
+    },
+    "build": {
+        "win": {
+            "target": [
+                {
+                    "target": "nsis",
+                    "arch": [
+                        "x64",
+                        "ia32"
+                    ]
+                }
+            ]
+        }
+    },
+    "repository": "https://github.com/electron/piggy-bank",
+    "keywords": [
+        "Electron"
+    ],
+    "dependencies": {
+        "electron-disable-file-drop": "^1.0.2",
+        "pug": "^2.0.4",
+        "ejs": "^3.0.2",
+        "mime": "^2.0.4",
+        "jquery": "^3.5.1",
+        "@fortawesome/fontawesome-free": "^5.13.0",
+        "jszip": "^3.4.0",
+        "file-saver": "^2.0.2"
+    },
+    "devDependencies": {
+        "electron": "^8.2.3",
+        "electron-builder": "^22.5.1"
+    }
+}
