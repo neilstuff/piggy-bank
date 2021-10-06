@@ -11,34 +11,34 @@
     <link rel="stylesheet" href="assets/styles/treeview.css">
     <link rel="stylesheet" href="assets/styles/main.css">
     <link rel="stylesheet" href="assets/styles/datepickr.css">
+    <link rel="stylesheet" href="assets/styles/calendar.css">
 
     <script src="node_modules/jquery/dist/jquery.min.js"></script>
+    <script src="node_modules/jszip/dist/jszip.min.js"></script>
+
+    <script src="assets/javascripts/util/fileutil.js"></script>
     <script src="assets/javascripts/util/sdrag.js"></script>
     <script src="assets/javascripts/util/treeview.js"></script>
-    <script src="assets/javascripts/util/datepickr.js"></script>
+    <script src="assets/javascripts/util/datepicker.js"></script>
     <script src="assets/javascripts/util/dateformatter.js"></script>
     <script src="assets/javascripts/util/currency.js"></script>
+    <script src="assets/javascripts/util/calendar.js"></script>
 
     <script type="module" src="assets/javascripts/main.js"></script>
 
-    <script>
-        window.$ = window.jQuery = require("jquery");
-    </script>
-
     <script type="text/template" data-template="card-item">
-        <div id="card-${id}" class="card" style="position:relative;" draggable="true" ondragstart="$(this).Drag(event)">
-            <div class="card-main" ondragover="$(this).OnCardDrop(event)">
+        <div id="card-${id}" class="card-${type}" style="position:relative;" draggable="true" ondragstart="$(this).Drag(event)">
+            <div class="card-${type}-main" ondragover="$(this).OnCardDrop(event)">
                 <div style="position:relative; color:black;">
-                    <div class="far fa-edit fa-3x bottom-icon menu-item"></div>
+                    <div class="far ${icon} fa-3x bottom-icon menu-item"></div>
                 </div>
                 <div style="font-size:12px; font-family:Arial, Helvetica, sans-serif; position:absolute; top:5px; bottom:0px; left:45px;">
-                    <input style="font-size:12px; width:80%; margin-top:2px; margin-bottom:5px; border:none; border-bottom: 1px dashed rgba(0,0,0, 0.2);  outline: none;" value="${merchant}" placeholder="merchant" oninput="$(this).OnInput('merchant', '${id}', this.value)"
-                    />
-                    <input type="text" name="currency-field" style="font-size:12px; width:80%; border:none; border-bottom: 1px dashed rgba(0,0,0, 0.2);  outline: none; margin-bottom:5px;" id="currency-field" pattern="^\$\d{1,3}(,\d{3})*(\.\d+)?$" value="${amount}" data-type="currency"
+                    <input style="font-size:12px; width:80%; margin-top:2px; margin-bottom:5px; border:none; border-bottom: 1px dashed rgba(0,0,0, 0.2); outline: none; background-color: transparent;" value="${merchant}" placeholder="merchant" oninput="$(this).OnInput('merchant', '${id}', this.value)"/>
+                    <input type="text" name="currency-field" style="font-size:12px; width:80%; border:none; border-bottom: 1px dashed rgba(0,0,0, 0.2); outline: none; margin-bottom:5px; background-color: transparent;" id="currency-field" pattern="^\$\d{1,3}(,\d{3})*(\.\d+)?$" value="${amount}" data-type="currency"
                         placeholder="$0.0" oninput="$(this).OnInput('amount', '${id}', this.value)" />
                 </div>
                 <div style="position:relative; margin-top:26px; left:5px; font-size:8px; font-family:Arial, Helvetica, sans-serif; ">
-                    <input id="date-${id}" style="font-size:9px; width:80px; border: none; outline: none;" value="${date}" />
+                    <input id="date-${id}" style="font-size:9px; width:80px; border: none; outline: none; background-color: transparent;" value="${date}" />
                 </div>
                 <div style="position:absolute; top:3px; right:3px; color:black;">
                     <div style="font-size:14px;" class="far fa-window-close fa-1x bottom-icon menu-item" onclick="$(this).Close('#card-${id}')"></div>
@@ -46,6 +46,7 @@
             </div>
         </div>
     </script>
+    
 </head>
 
 <body style="font-family:Arial, Helvetica, sans-serif; font-size:10px; overflow:hidden;">
@@ -134,22 +135,47 @@
             </div>
         </div>
         <div id="separator" style="position:absolute; top:35px; left:335px; width:8px; bottom:20px; font-size:14px; overflow:hidden; cursor: col-resize"></div>
-        <div id="receipts" style="position:absolute; top:35px; left:345px; right:55px; bottom:10px; font-size:14px; border: 1px solid rgba(0,0,0, 0.2); overflow:auto;">
-            <div id="receipt-container" class="mainbox">
+        <div id="views" style="position:absolute; top:35px; left:345px; right:55px; bottom:10px;">
+            <div id="receipts" style="position:absolute; top:0px; left:0px; right:0px; bottom:150px; font-size:14px; border: 1px solid rgba(0,0,0, 0.2); overflow:auto;">
+                <div id="receipt-container" class="mainbox">
+                </div>
+            </div>     
+            <div id="calendar-container" style="position:absolute; left:0px; right:0px; bottom:0px; height:140px; font-size:18px; border: 1px solid rgba(0,0,0, 0.2); overflow:none;">
+                <div id="calendar-container-controls" style="height:34px; border-bottom:1px solid rgba(0,0,0, 0.2);">
+                    <div>
+                        <div id="left-calendar-controls" style="position: absolute; left:0px; padding-left:5px;">
+                            <button class="button" id="left-calendar-year">&laquo;</button>
+                            <button class="button" id="left-calendar-month">&lsaquo;</button>
+                        </div>
+                        <p id="calendar-month-year" style="position: absolute; top:-12px; left:100px; right:100px; text-align: center;"></p>
+                        <div id="right-calendar-controls" style="position: absolute; right:0px; padding-right:5px;">
+                            <button class="button" id="right-calendar-year">&rsaquo;</button>
+                            <button class="button" id="right-calendar-month">&raquo;</button>
+                        </div>
+                    </div>
+                </div>
+                
+                <div id="calendar-container-days" class="calendar-container-days" style="position:absolute; top:35px; left:0px; right:0px; bottom:0px;">
+                </div>
+                
             </div>
         </div>
         <div style="position:absolute; top:35px; right:10px; width:35px; bottom:10px; border: 1px solid rgba(0,0,0, 0.2); padding-top:10px; font-size:18px;">
-            <a id="add-receipt" style="font-size: 23px; position:absolute; top:8px; left:6px; color: rgba(110, 110, 110, 0.8)" class="fa fa-plus-circle fa-1x bottom-icon menu-item"></a>
-            <p style="font-size: 14px; border-bottom: 1px solid rgba(0,0,0, 0.2);">&nbsp;</p>
-            <a id="marker-0" style="position:absolute; left:12px; color: rgba(0, 0, 0, 0.8); font-size:14px;" class="fa fa-circle fa-1x bottom-icon menu-item" draggable="true"></a>
-            <p style="font-size: 10px;">&nbsp;</p>
-            <a id="marker-1" style="position:absolute; left:12px; color: rgba(255, 0, 0, 0.8); font-size:14px;" class="fa fa-circle fa-1x bottom-icon menu-item" draggable="true"></a>
-            <p style="font-size: 10px;">&nbsp;</p>
-            <a id="marker-2" style="position:absolute; left:12px; color: rgba(0, 255, 0, 0.8); font-size:14px;" class="fa fa-circle fa-1x bottom-icon menu-item" draggable="true"></a>
-            <p style="font-size: 10px;">&nbsp;</p>
-            <a id="marker-3" style="position:absolute; left:12px; color: rgba(0, 0, 255, 0.8); font-size:14px;" class="fa fa-circle fa-1x bottom-icon menu-item" draggable="true"></a>
-            <p style="font-size: 10px;">&nbsp;</p>
-            <a id="marker-4" style="position:absolute; left:12px; color: rgba(110, 110, 110, 0.8); font-size:14px;" class="fa fa-circle fa-1x bottom-icon menu-item" draggable="true"></a>
+            <a id="add-income" style="font-size: 23px; position:absolute; top:8px; left:6px; color: rgba(110, 110, 110, 0.8)" class="fa fa-plus-circle fa-1x bottom-icon menu-item"></a>
+            <a id="add-expense" style="font-size: 23px; position:absolute; top:36px; left:6px; color: rgba(110, 110, 110, 0.8)" class="fa fa-minus-circle fa-1x bottom-icon menu-item"></a>
+            <div style="position:absolute; top:64px; width:35px; height:6px; border-bottom: 1px solid rgba(0,0,0, 0.2);"></div>
+            <div style="position:absolute; top:64px; font-size: 14px;">
+                <p style="font-size: 10px;">&nbsp;</p>
+                <a id="marker-0" style="position:absolute; left:12px; color: rgba(0, 0, 0, 0.8); font-size:14px;" class="fa fa-circle fa-1x bottom-icon menu-item" draggable="true"></a>
+                <p style="font-size: 10px;">&nbsp;</p>
+                <a id="marker-1" style="position:absolute; left:12px; color: rgba(255, 0, 0, 0.8); font-size:14px;" class="fa fa-circle fa-1x bottom-icon menu-item" draggable="true"></a>
+                <p style="font-size: 10px;">&nbsp;</p>
+                <a id="marker-2" style="position:absolute; left:12px; color: rgba(0, 255, 0, 0.8); font-size:14px;" class="fa fa-circle fa-1x bottom-icon menu-item" draggable="true"></a>
+                <p style="font-size: 10px;">&nbsp;</p>
+                <a id="marker-3" style="position:absolute; left:12px; color: rgba(0, 0, 255, 0.8); font-size:14px;" class="fa fa-circle fa-1x bottom-icon menu-item" draggable="true"></a>
+                <p style="font-size: 10px;">&nbsp;</p>
+                <a id="marker-4" style="position:absolute; left:12px; color: rgba(110, 110, 110, 0.8); font-size:14px;" class="fa fa-circle fa-1x bottom-icon menu-item" draggable="true"></a>
+            </div>
         </div>
     </div>
 

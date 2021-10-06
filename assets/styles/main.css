@@ -95,6 +95,20 @@ table.info tfoot td {
     color: black;
 }
 
+.calendar {
+    margin-top: 5;
+    position:absolute;
+    display: inline-block;
+    box-sizing: border-box;
+    bottom:200px;
+    height:100px;
+    left:0px; 
+    right:0px; 
+    border: 1px;
+    color: black;
+}
+
+
 #toolbar .button {
     width: 32px;
     height: 32px;

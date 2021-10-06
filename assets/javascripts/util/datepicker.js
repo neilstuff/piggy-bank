@@ -1,7 +1,7 @@
 var LEFT_ARROW = "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQBAMAAADt3eJSAAAAIVBMVEUAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAABt0UjBAAAACnRSTlMAAQOUl5q3vMDcYnh4SwAAADtJREFUCJljYEAGjB5QhugqqEDUKpjAKpjAKpgAhGEFY2TBGOowBlMVlAESYoAJMcCEoAymSpj1QgwMAGVDE81FChz9AAAAAElFTkSuQmCCcnmx5tud6fi5jyiqpzefskf5t2snhynvsaj7ioqwfvu5nza";
 var RIGHT_ARROW = "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQBAMAAADt3eJSAAAAIVBMVEUAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAABt0UjBAAAACnRSTlMAAQOUl5q3vMDcYnh4SwAAAEFJREFUCFtjYIADDkcog2upAJSxKhDGgApxrYIKARkQISBjlQGMkQBlLFeAMoqgiiECQEYR1ECoAAMnVICBCWIBAIEPE827Ja8hAAAAAElFTkSuQmCC";
 
-function datepickr (config) {
+function DatePicker (config) {
 
     var self = this,
     elements,
@@ -11,7 +11,7 @@ function datepickr (config) {
 
     this.config = config;
 
-    datepickr.prototype = datepickr.init.prototype;
+    DatePicker.prototype = DatePicker.init.prototype;
 
     documentClick = function (event) {
  
@@ -41,7 +41,7 @@ function datepickr (config) {
 
         console.log(`Adding : ${element.id}`);
 
-        element._datepickr = new datepickr.init(self.instances, element, config);
+        element._datepickr = new DatePicker.init(self.instances, element, config);
         
         self.instances[element.id] = element._datepickr;
 
@@ -67,7 +67,7 @@ function datepickr (config) {
 /**
  * @constructor
  */
-datepickr.init = function (instances, element, instanceConfig) {
+DatePicker.init = function (instances, element, instanceConfig) {
 
     this.instances = instances;
     this.element = element;
@@ -451,7 +451,7 @@ datepickr.init = function (instances, element, instanceConfig) {
     return self;
 };
 
-datepickr.init.prototype = {
+DatePicker.init.prototype = {
     hasClass: function (element, className) { return element.classList.contains(className); },
     addClass: function (element, className) { element.classList.add(className); },
     removeClass: function (element, className) { element.classList.remove(className); },

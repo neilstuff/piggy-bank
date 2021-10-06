@@ -4,7 +4,6 @@ function createTree(div, backColor, contextMenu, callbacks) {
     var menu_image = "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQBAMAAADt3eJSAAAAIVBMVEUAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAABt0UjBAAAACnRSTlMAAQOUl5q3vMDcYnh4SwAAAEFJREFUCFtjYIADDkcog2upAJSxKhDGgApxrYIKARkQISBjlQGMkQBlLFeAMoqgiiECQEYR1ECoAAMnVICBCWIBAIEPE827Ja8hAAAAAElFTkSuQmCC";
     var empty_image = "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7";
 
-
     function checkParentage(source, target) {
 
         if (source == null || target == null) {
@@ -46,6 +45,7 @@ function createTree(div, backColor, contextMenu, callbacks) {
         }
 
         return element;
+        
     }
 
     function createImgElement(id, className, src, width, height) {
@@ -77,7 +77,9 @@ function createTree(div, backColor, contextMenu, callbacks) {
     /**
      * Get an elements position
      * 
-     * @param {element} el 
+     * @param {element} el the elemnt position
+     * 
+     * @return the x,y coordinates of the element
      */
     function getPosition(el) {
         var xPos = 0;
@@ -99,12 +101,33 @@ function createTree(div, backColor, contextMenu, callbacks) {
 
             el = el.offsetParent;
         }
+
         return {
             x: xPos,
             y: yPos
         };
     }
 
+    /**
+     * Get the size of the view area
+     * 
+     * return the size (x,y) of the view area
+     * 
+     */
+    function getWindowSize() {
+        var win = window,
+
+            doc = document,
+            docElem = doc.documentElement,
+            body = doc.getElementsByTagName('body')[0],
+            x = win.innerWidth || docElem.clientWidth || body.clientWidth,
+            y = win.innerHeight || docElem.clientHeight || body.clientHeight;
+
+        return {
+            x: x,
+            y: y
+        }
+    }
     /**
      * Create the Separator
      * @param {element} ulElement 
@@ -187,9 +210,7 @@ function createTree(div, backColor, contextMenu, callbacks) {
             index = node.parent.childNodes.indexOf(node);
             node.parent.childNodes.splice(index, 0, tree.draggedNode);
 
-            if (tree.callbacks && tree.callbacks.hasOwnProperty('removechild')) {
-                tree.callbacks['removechild'](tree.draggedNode.parent);
-            }
+            invokeCallack('removechild', tree, tree.draggedNode.parent);
 
             redrawNode(tree.draggedNode.parent);
 
@@ -255,17 +276,17 @@ function createTree(div, backColor, contextMenu, callbacks) {
             var index = tree.draggedNode.parent.childNodes.indexOf(tree.draggedNode);
             tree.draggedNode.parent.childNodes.splice(index, 1);
 
+            var parent = tree.draggedNode.parent;
+
             node.moveChildNode(nodeTree.draggedNode);
 
-            if (nodeTree.callbacks && nodeTree.callbacks.hasOwnProperty('addchild')) {
-                nodeTree.callbacks['addchild'](node);
-            }
+            invokeCallack('addchild', tree, node);
 
             redrawNode(tree.draggedNode.parent);
+            redrawNode(parent);
 
-            if (tree.callbacks && tree.callbacks.hasOwnProperty('removechild')) {
-                tree.callbacks['removechild'](tree.draggedNode.parent);
-            }
+            invokeCallack('addchild', tree, tree.draggedNode.parent);
+            invokeCallack('removechild', tree, parent);
 
             nodeTree.draggedNode = null;
 
@@ -297,9 +318,14 @@ function createTree(div, backColor, contextMenu, callbacks) {
 
     }
 
-    function redrawNode(node) {
+    function invokeCallack(callback, tree, node) {
+        if (tree.callbacks && tree.callbacks.hasOwnProperty(callback)) {
+            tree.callbacks[callback](node);
+        }
 
-        console.log("Redraw Node: " + node.childNodes.length);
+    }
+
+    function redrawNode(node) {
 
         if (node.childNodes.length == 0) {
             var img = node.elementLi.getElementsByTagName("img")[0];
@@ -668,6 +694,7 @@ function createTree(div, backColor, contextMenu, callbacks) {
             text.style.display = "none";
 
             box.style.width = "50%";
+            box.className = "box";
             node.elementLi.getElementsByTagName('span')[0].appendChild(box);
             box.value = node.text;
             box.focus();
@@ -705,6 +732,13 @@ function createTree(div, backColor, contextMenu, callbacks) {
                         document.body.appendChild(v_div);
                     } else {
                         v_div = this.contextMenuDiv;
+
+                        v_div.onclick = function() {
+                            if (tree.contextMenuDiv != null) {
+                                tree.contextMenuDiv.style.display = 'none';
+                            }
+                        }
+
                     }
 
                     v_div.innerHTML = '';
@@ -713,6 +747,15 @@ function createTree(div, backColor, contextMenu, callbacks) {
                     var v_right = event.pageY - 5;
 
                     var position = getPosition(this.selectedNode.elementLi);
+                    var size = getWindowSize();
+                    var height = v_menu.elements.length * 40;
+
+
+                    if (position.y + height > size.y) {
+                        position.y = size.y - height;
+                    }
+
+                    console.log(`${JSON.stringify(position)} : ${JSON.stringify(size)} : ${height}`);
 
                     v_div.style.display = 'block';
                     v_div.style.position = 'absolute';
@@ -751,8 +794,14 @@ function createTree(div, backColor, contextMenu, callbacks) {
                         }
 
                     })(iItem);
-
+                    
+                    v_div.onclick = function() {
+                        if (tree.contextMenuDiv != null) {
+                            tree.contextMenuDiv.style.display = 'none';
+                        }
+                    }
                     this.contextMenuDiv = v_div;
+                    
 
                 }
             }
@@ -794,12 +843,6 @@ function createTree(div, backColor, contextMenu, callbacks) {
             })(iSubmenu);
         }
 
-    }
-
-    window.onclick = function() {
-        if (tree.contextMenuDiv != null) {
-            tree.contextMenuDiv.style.display = 'none';
-        }
     }
 
     return tree;

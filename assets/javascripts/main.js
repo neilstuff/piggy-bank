@@ -1,23 +1,12 @@
-const ipcRenderer = require('electron').ipcRenderer
-const app = require('electron').remote.app;
-const remote = require('electron').remote;
-const session = require('electron').remote.session;
-
-const fs = require('fs');
-const $ = require('jquery');
-const zip = require('jszip');
-const fileSaver = require('file-saver')
-
-require('electron-disable-file-drop');
-
-document.addEventListener('dragover', event => event.preventDefault());
-document.addEventListener('drop', event => event.preventDefault());
-
 let cards = {};
 let markers = {};
 let format = {};
 let tree = null;
-let picker = new datepickr();
+let picker = new DatePicker();
+let calendar = new Calendar($('#calendar-container-days')[0], 80);
+
+let year = null;
+let month = null;
 
 var ACCOUNTS_MENU = {
     'context1': {
@@ -137,9 +126,11 @@ let CALLBACKS = {
 
             let value = $(this).Substitute(template, {
                 id: id,
-                merchant: cards[node.id][id].merchant,
-                amount: cards[node.id][id].amount,
-                date: cards[node.id][id].date
+                merchant: cards[tree.selectedNode.id][id].merchant,
+                amount: cards[tree.selectedNode.id][id].amount,
+                date: cards[tree.selectedNode.id][id].date,
+                type: cards[tree.selectedNode.id][id].type,
+                icon: cards[tree.selectedNode.id][id].type == 'income' ? 'fa-hand-point-up' : 'fa-hand-point-down'
             });
 
             $('#receipt-container').html($('#receipt-container').html() + value);
@@ -169,30 +160,29 @@ let CALLBACKS = {
 };
 
 $("#window-minimize").on('click', async(e) => {
-    var window = remote.getCurrentWindow();
 
-    window.minimize();
+    window.api.minimize();
 
 });
 
 $("#window-maximize").on('click', async(e) => {
-    var window = remote.getCurrentWindow();
+    var isMaximized = window.api.isMaximized();
 
-    if (!window.isMaximized()) {
+    if (!isMaximized) {
         $("#window-maximize").addClass("fa-window-restore");
         $("#window-maximize").removeClass("fa-square");
-        window.maximize();
+        window.api.maximize();
     } else {
         $("#window-maximize").removeClass("fa-window-restore");
         $("#window-maximize").addClass("fa-square");
-        window.unmaximize();
+        window.api.unmaximize();
     }
 
 });
 
 $("#quit").on('click', async(e) => {
 
-    app.quit();
+    window.api.quit();
 
 });
 
@@ -285,11 +275,8 @@ $.fn.Load = (zipData) => {
                 var fileUrl = await getBlob(zipEntry);
                 var json = await read_blob(fileUrl);
 
-                console.log(`retreiving relativePath ${relativePath.replace("receipts.json", "")}`)
-
                 cards[structure[relativePath.replace("receipts.json", "")].id] = JSON.parse(json);
-                console.log(json);
-
+ 
             }
 
         });
@@ -338,6 +325,43 @@ $.fn.Tag = () => {
 
 }
 
+$.fn.Markers = () => {
+
+    for (let iMarker = 0; iMarker < 5; iMarker++) {
+
+        $(`#marker-${iMarker}`).on('click', (e) => {
+            $(`#marker-${iMarker}`).toggleClass('fa-circle-o fa-circle');
+
+            if ($(`#marker-${iMarker}`).hasClass('fa-circle')) {
+
+                if (markers[tree.selectedNode.id] == null) {
+                    markers[tree.selectedNode.id] = [iMarker];
+                } else {
+                    if (!markers[tree.selectedNode.id].includes(markers)) {
+                        markers[tree.selectedNode.id].push(markers);
+                    }
+                }
+
+            } else {
+                let selectedMarkers = markers[tree.selectedNode.id];
+
+                if (selectedMarkers == null) {
+                    selectedMarkers = [];
+                }
+                let index = selectedMarkers.indexOf(iMarker);
+
+                if (index != -1) {
+                    markers[tree.selectedNode.id].splice(index, 1);
+                }
+
+            }
+
+        });
+
+    }
+
+}
+
 $.fn.Close = (id) => {
     $(id)[0].parentNode.removeChild($(id)[0]);
 }
@@ -366,7 +390,21 @@ $.fn.OnInput = (field, id, value) => {
 
 $.fn.OnCardDrop = (event) => {}
 
-$(document).ready(async() => {
+/**
+ * Add another card to the swipper
+ * 
+ * @param {String} time The current Time
+ */
+ function addSwiperEntry(dayofmonth) {
+    var entry = generateSwiperEntry(dayofmonth);
+
+    $('#image-container')[0].insertBefore(entry.node, entry.position);
+
+    return entry;
+
+}
+
+$(async() => {
 
     tree = createTree('placeholder', 'white', ACCOUNTS_MENU, CALLBACKS);
 
@@ -431,7 +469,7 @@ $(document).ready(async() => {
 
     });
 
-    $('#add-receipt').on('click', (e) => {
+    $('#add-income').on('click', (e) => {
         let template = $('script[data-template="card-item"]').text();
         let id = $(this).GetID();
         let date = new Date();
@@ -443,14 +481,17 @@ $(document).ready(async() => {
         cards[tree.selectedNode.id][id] = {
             merchant: '',
             date: dateFormatter.formattedDate,
-            amount: '$0.00'
+            amount: '$0.00',
+            type: 'income'       
         };
 
         let value = $(this).Substitute(template, {
             id: id,
             merchant: cards[tree.selectedNode.id][id].merchant,
             amount: cards[tree.selectedNode.id][id].amount,
-            date: cards[tree.selectedNode.id][id].date
+            date: cards[tree.selectedNode.id][id].date,
+            type:  cards[tree.selectedNode.id][id].type,
+            icon: cards[tree.selectedNode.id][id].type == 'income' ? 'fa-hand-point-up' : 'fa-hand-point-down'
         });
 
         let fragment = document.createRange().createContextualFragment(value);
@@ -461,40 +502,46 @@ $(document).ready(async() => {
 
         Currency.apply();
 
+        $(this).Markers();
+
     });
 
-    for (let iMarker = 0; iMarker < 5; iMarker++) {
+    $('#add-expense').on('click', (e) => {
+        let template = $('script[data-template="card-item"]').text();
+        let id = $(this).GetID();
+        let date = new Date();
+        let dateFormatter = new DateFormatter('F j, Y', (new Date()).getTime());
+        if (cards[tree.selectedNode.id] == undefined) {
+            cards[tree.selectedNode.id] = {};
+        }
 
-        $(`#marker-${iMarker}`).on('click', (e) => {
-            $(`#marker-${iMarker}`).toggleClass('fa-circle-o fa-circle');
+        cards[tree.selectedNode.id][id] = {
+            merchant: '',
+            date: dateFormatter.formattedDate,
+            amount: '$0.00',
+            type: 'expense'       
+        };
 
-            if ($(`#marker-${iMarker}`).hasClass('fa-circle')) {
+        let value = $(this).Substitute(template, {
+            id: id,
+            merchant: cards[tree.selectedNode.id][id].merchant,
+            amount: cards[tree.selectedNode.id][id].amount,
+            date: cards[tree.selectedNode.id][id].date,
+            type: cards[tree.selectedNode.id][id].type,
+            icon: cards[tree.selectedNode.id][id].type == 'income' ? 'fa-hand-point-up' : 'fa-hand-point-down'
+         });
 
-                if (markers[tree.selectedNode.id] == null) {
-                    markers[tree.selectedNode.id] = [iMarker];
-                } else {
-                    if (!markers[tree.selectedNode.id].includes(markers)) {
-                        markers[tree.selectedNode.id].push(markers);
-                    }
-                }
+        let fragment = document.createRange().createContextualFragment(value);
 
-            } else {
-                let selectedMarkers = markers[tree.selectedNode.id];
+        $('#receipt-container')[0].appendChild(fragment);
 
-                if (selectedMarkers == null) {
-                    selectedMarkers = [];
-                }
-                let index = selectedMarkers.indexOf(iMarker);
+        picker.decorate(document.getElementById(`date-${id}`));
 
-                if (index != -1) {
-                    markers[tree.selectedNode.id].splice(index, 1);
-                }
+        Currency.apply();
 
-            }
+        $(this).Markers();
 
-        });
-
-    }
+    });
 
     $('#navigate').on('click', (e) => {
 
@@ -552,8 +599,15 @@ $(document).ready(async() => {
         let rightPaneLeft = $("#separator").offset().left + 9;
 
         $("#container").width(leftPaneWidth + "px");
-        $("#receipts").css("left", rightPaneLeft + "px");
+        $("#views").css("left", rightPaneLeft + "px");
 
     });
+
+    document.addEventListener('dragover', event => event.preventDefault());
+    document.addEventListener('drop', event => event.preventDefault());
+
+    document.getElementById('calendar-month-year').innerHTML = `${calendar.getMonthLong()}/${calendar.getYear()}`;
+
+    calendar.setup();
 
 });

@@ -1,0 +1,67 @@
+
+#calendar-container {
+	font-family: 'Trebuchet MS', Tahoma, Verdana, Arial, sans-serif;
+	font-size: 18px;
+}
+
+#calendar-container .title {
+    text-align: center;
+}
+
+#calendar-container .button {
+    width: 32px;
+    height: 32px;
+    background-color: white;
+    background-repeat: no-repeat;
+    color: rgba(0, 0, 0, 0.4);
+    border: none;
+    cursor: pointer;
+    overflow: hidden;
+    outline: none;
+    font-size: 24px;
+}
+
+#calendar-container .button:hover {
+    color: rgba(0, 0, 0, 0.8);
+}
+
+#calendar-container .button:focus {
+    outline: 0;
+}
+
+.calendar-container-days {
+    display: flex;
+    flex-wrap: wrap;
+    align-content: flex-start;
+    justify-content: left;
+    box-sizing: border-box;
+    flex-direction: column;
+    overflow-x: auto;
+  }
+  
+ .calendar-container-days::-webkit-scrollbar {
+    width: 8px;
+    height: 8px;
+  }
+  
+  .calendar-container-days::-webkit-scrollbar-track {
+    -webkit-border-radius: 4px;
+    background: rgba(240, 240, 240, 0.1);
+    border-radius: 2px;
+  }
+  
+  .calendar-container-days::-webkit-scrollbar-thumb {
+    -webkit-border-radius: 4px;
+    border: 1px solid rgb(134, 134, 134);
+    background: rgba(0, 0, 0, 0.1);
+    border-radius: 2px;
+  }
+  
+  .calendar-container-days::-webkit-scrollbar-thumb:hover {
+    background: rgba(0, 0, 0, 0.4);
+  }
+  
+  .calendar-container-days::-webkit-scrollbar-thumb:window-inactive {
+    background: rgba(0, 0, 0, 0.05);
+  }
+  
