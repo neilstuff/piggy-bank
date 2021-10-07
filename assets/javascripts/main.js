@@ -159,6 +159,10 @@ let CALLBACKS = {
 
 };
 
+function updateDate(element, date) {
+    console.log(element, date);
+}
+
 $("#window-minimize").on('click', async(e) => {
 
     window.api.minimize();
@@ -491,7 +495,7 @@ $(async() => {
             amount: cards[tree.selectedNode.id][id].amount,
             date: cards[tree.selectedNode.id][id].date,
             type:  cards[tree.selectedNode.id][id].type,
-            icon: cards[tree.selectedNode.id][id].type == 'income' ? 'fa-hand-point-up' : 'fa-hand-point-down'
+            icon: 'fa-hand-point-up' 
         });
 
         let fragment = document.createRange().createContextualFragment(value);
@@ -499,6 +503,7 @@ $(async() => {
         $('#receipt-container')[0].appendChild(fragment);
 
         picker.decorate(document.getElementById(`date-${id}`));
+        picker.addEventListener(updateDate);
 
         Currency.apply();
 
@@ -528,7 +533,7 @@ $(async() => {
             amount: cards[tree.selectedNode.id][id].amount,
             date: cards[tree.selectedNode.id][id].date,
             type: cards[tree.selectedNode.id][id].type,
-            icon: cards[tree.selectedNode.id][id].type == 'income' ? 'fa-hand-point-up' : 'fa-hand-point-down'
+            icon:'fa-hand-point-down'
          });
 
         let fragment = document.createRange().createContextualFragment(value);

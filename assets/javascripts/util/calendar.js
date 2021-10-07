@@ -38,8 +38,8 @@ function Calendar(container, height) {
         var colour = date.getFullYear() == today.getFullYear() && date.getDate() == today.getDate() 
                    ? "rgba(255,0,0,1.0)" 
                    : "rgba(255,0,0,0.5)";
-        var active = `${date.getFullYear()}-${date.getMonth()}-${date.getDay()}` in activeDates;
- 
+                   
+        var active = `${date.getFullYear()}-${date.getMonth()}-${date.getDate()}` in activeDates;
         var html = `<div style="display:inline-block; position: relative; width:70px; height:${height}px; border:1px solid rgba(0,0,0,0.5); margin:10px;">` + 
             `<div style="display:inline-block; position: absolute; left:0px; top:0px;  width:70px; height:26px; color:white; background-color:${colour}; text-align:center">` +
             `<label>${dayInMonth}</label>` +
@@ -80,7 +80,7 @@ function Calendar(container, height) {
 
     Calendar.prototype.setup = function() {
 
-        this.activeDates[`${this.date.getFullYear()}-${this.date.getMonth()}-${this.date.getDay()}`] = 0;
+        this.activeDates[`${this.date.getFullYear()}-${this.date.getMonth()}-${this.date.getDate()}`] = 0;
 
         var daysInMonth = this.daysInMonth(this.date.getMonth(), this.date.getFullYear());
 

@@ -8,6 +8,7 @@ function DatePicker (config) {
     createInstance;
 
     this.instances = {};
+    this.listeners = [];
 
     this.config = config;
 
@@ -41,7 +42,7 @@ function DatePicker (config) {
 
         console.log(`Adding : ${element.id}`);
 
-        element._datepickr = new DatePicker.init(self.instances, element, config);
+        element._datepickr = new DatePicker.init(self.instances, self.listeners, element, config);
         
         self.instances[element.id] = element._datepickr;
 
@@ -63,18 +64,24 @@ function DatePicker (config) {
     }
 
 }
+DatePicker.prototype.addEventListener = function(listener) {
+    console.log("Adding listener")
+    this.listeners.push(listener);
+}
 
 /**
  * @constructor
  */
-DatePicker.init = function (instances, element, instanceConfig) {
+DatePicker.init = function (instances, listeners, element, instanceConfig) {
 
-    this.instances = instances;
+    this.instances = instances;    
+    this.listeners = listeners;
     this.element = element;
     this.id = element.id;
 
     this.calendar = document.createElement('table');
     this.calendar.id =`calendar-${element.id}`;
+
     this.calendarBody = document.createElement('tbody');
     this.navigationCurrentMonth = document.createElement('span');
  
@@ -347,6 +354,10 @@ DatePicker.init = function (instances, element, instanceConfig) {
                     year: self.currentYearView
                 };
 
+                for (var listener in self.listeners) {
+                    self.listeners[listener](document.getElementById(self.wrapperElement.id), self.selectedDate);
+                }
+                
                 currentTimestamp = new Date(self.currentYearView, self.currentMonthView, self.selectedDate.day).getTime();
 
                 if (self.config.altInput) {
@@ -461,8 +472,7 @@ DatePicker.init.prototype = {
         element.addEventListener(type, listener, useCapture);
     },
     removeEventListener: function (element, type, listener, useCapture) {
-        console.log('removeEventListener');
- //       element.removeEventListener(type, listener, useCapture);
+        element.removeEventListener(type, listener, useCapture);
     },
     l10n: {
         weekdays: {

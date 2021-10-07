@@ -38,7 +38,7 @@
                         placeholder="$0.0" oninput="$(this).OnInput('amount', '${id}', this.value)" />
                 </div>
                 <div style="position:relative; margin-top:26px; left:5px; font-size:8px; font-family:Arial, Helvetica, sans-serif; ">
-                    <input id="date-${id}" style="font-size:9px; width:80px; border: none; outline: none; background-color: transparent;" value="${date}" />
+                    <input id="date-${id}" style="font-size:9px; width:80px; border: none; outline: none; background-color: transparent;" value="${date}" readonly/>
                 </div>
                 <div style="position:absolute; top:3px; right:3px; color:black;">
                     <div style="font-size:14px;" class="far fa-window-close fa-1x bottom-icon menu-item" onclick="$(this).Close('#card-${id}')"></div>
@@ -140,14 +140,14 @@
                 <div id="receipt-container" class="mainbox">
                 </div>
             </div>     
-            <div id="calendar-container" style="position:absolute; left:0px; right:0px; bottom:0px; height:140px; font-size:18px; border: 1px solid rgba(0,0,0, 0.2); overflow:none;">
+            <div id="calendar-container" style="position:absolute; left:0px; right:0px; bottom:0px; height:140px; font-size:18px; border: 1px solid rgba(0,0,0, 0.2); overflow:hidden;">
                 <div id="calendar-container-controls" style="height:34px; border-bottom:1px solid rgba(0,0,0, 0.2);">
                     <div>
                         <div id="left-calendar-controls" style="position: absolute; left:0px; padding-left:5px;">
                             <button class="button" id="left-calendar-year">&laquo;</button>
                             <button class="button" id="left-calendar-month">&lsaquo;</button>
                         </div>
-                        <p id="calendar-month-year" style="position: absolute; top:-12px; left:100px; right:100px; text-align: center;"></p>
+                        <label id="calendar-month-year" style="position: absolute; top:5px; left:100px; right:100px; text-align: center;"></label>
                         <div id="right-calendar-controls" style="position: absolute; right:0px; padding-right:5px;">
                             <button class="button" id="right-calendar-year">&rsaquo;</button>
                             <button class="button" id="right-calendar-month">&raquo;</button>
