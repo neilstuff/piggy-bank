@@ -130,7 +130,7 @@ let CALLBACKS = {
                 amount: cards[tree.selectedNode.id][id].amount,
                 date: cards[tree.selectedNode.id][id].date,
                 type: cards[tree.selectedNode.id][id].type,
-                icon: cards[tree.selectedNode.id][id].type == 'income' ? 'fa-hand-point-up' : 'fa-hand-point-down'
+                icon: cards[tree.selectedNode.id][id].type == 'income' ? 'fa-piggy-bank' : 'fa-donate'
             });
 
             $('#receipt-container').html($('#receipt-container').html() + value);
@@ -280,7 +280,7 @@ $.fn.Load = (zipData) => {
                 var json = await read_blob(fileUrl);
 
                 cards[structure[relativePath.replace("receipts.json", "")].id] = JSON.parse(json);
- 
+
             }
 
         });
@@ -399,7 +399,7 @@ $.fn.OnCardDrop = (event) => {}
  * 
  * @param {String} time The current Time
  */
- function addSwiperEntry(dayofmonth) {
+function addSwiperEntry(dayofmonth) {
     var entry = generateSwiperEntry(dayofmonth);
 
     $('#image-container')[0].insertBefore(entry.node, entry.position);
@@ -486,7 +486,7 @@ $(async() => {
             merchant: '',
             date: dateFormatter.formattedDate,
             amount: '$0.00',
-            type: 'income'       
+            type: 'income'
         };
 
         let value = $(this).Substitute(template, {
@@ -494,8 +494,8 @@ $(async() => {
             merchant: cards[tree.selectedNode.id][id].merchant,
             amount: cards[tree.selectedNode.id][id].amount,
             date: cards[tree.selectedNode.id][id].date,
-            type:  cards[tree.selectedNode.id][id].type,
-            icon: 'fa-hand-point-up' 
+            type: cards[tree.selectedNode.id][id].type,
+            icon: 'fa-piggy-bank'
         });
 
         let fragment = document.createRange().createContextualFragment(value);
@@ -524,7 +524,7 @@ $(async() => {
             merchant: '',
             date: dateFormatter.formattedDate,
             amount: '$0.00',
-            type: 'expense'       
+            type: 'expense'
         };
 
         let value = $(this).Substitute(template, {
@@ -533,8 +533,8 @@ $(async() => {
             amount: cards[tree.selectedNode.id][id].amount,
             date: cards[tree.selectedNode.id][id].date,
             type: cards[tree.selectedNode.id][id].type,
-            icon:'fa-hand-point-down'
-         });
+            icon: 'fa-donate'
+        });
 
         let fragment = document.createRange().createContextualFragment(value);
 
