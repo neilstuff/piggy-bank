@@ -38,8 +38,9 @@ function Calendar(container, height) {
         var colour = date.getFullYear() == today.getFullYear() && date.getDate() == today.getDate() 
                    ? "rgba(255,0,0,1.0)" 
                    : "rgba(255,0,0,0.5)";
+        var id = `${date.getFullYear()}-${date.getMonth()}-${date.getDate()}`
                    
-        var active = `${date.getFullYear()}-${date.getMonth()}-${date.getDate()}` in activeDates;
+        var active = `${id}` in activeDates;
         var html = `<div style="display:inline-block; position: relative; width:70px; height:${height}px; border:1px solid rgba(0,0,0,0.5); margin:10px;">` + 
             `<div style="display:inline-block; position: absolute; left:0px; top:0px;  width:70px; height:26px; color:white; background-color:${colour}; text-align:center">` +
             `<label>${dayInMonth}</label>` +
@@ -48,9 +49,9 @@ function Calendar(container, height) {
                 ` text-align:center; border-top:dotted 1px white; padding-top: 2px;">` +
             `<label>${dayOfWeek}</label>` +
             `</div>` +
-            `<div id="" style="display:inline-block; position: absolute; top:64px; font-size:10px; right:2px; height:10px; color:black; background-color:white; cursor:pointer;"` +
+            `<div id="actions-${id}" style="display:inline-block; position: absolute; top:64px; font-size:10px; right:2px; height:10px; color:black; background-color:white; cursor:pointer;"` +
                 `onclick="Calendar.display('${date.getFullYear()}','${dayInMonth}');"> ` +
-                `<div class="fas ${active ? 'fa-eye' : 'fa-eye-slash'}"></div>` +
+                `<div id="view-${id}" class="fas ${active ? 'fa-eye' : 'fa-eye-slash'}"></div>` +
             `</div>` +
          `</div>`;
         
@@ -96,6 +97,12 @@ function Calendar(container, height) {
             this.container.appendChild(node);
 
         }
+
+    }
+
+    Calendar.prototype.setEnabled = function(date) {
+
+        this.activeDates[date] = 0;
 
     }
 
