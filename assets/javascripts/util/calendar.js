@@ -38,8 +38,7 @@ function Calendar(container, height) {
         var colour = date.getFullYear() == today.getFullYear() && date.getDate() == today.getDate() 
                    ? "rgba(255,0,0,1.0)" 
                    : "rgba(255,0,0,0.5)";
-        var id = `${date.getFullYear()}-${date.getMonth()}-${date.getDate()}`
-                   
+        var id = `${date.getFullYear()}-${date.getMonth()}-${date.getDate()}`;                
         var active = `${id}` in activeDates;
         var html = `<div style="display:inline-block; position: relative; width:70px; height:${height}px; border:1px solid rgba(0,0,0,0.5); margin:10px;">` + 
             `<div style="display:inline-block; position: absolute; left:0px; top:0px;  width:70px; height:26px; color:white; background-color:${colour}; text-align:center">` +
@@ -53,9 +52,9 @@ function Calendar(container, height) {
                 `onclick="Calendar.display('${date.getFullYear()}','${dayInMonth}');"> ` +
                 `<div id="view-${id}" class="fas ${active ? 'fa-eye' : 'fa-eye-slash'}"></div>` +
             `</div>` +
-         `</div>`;
+        `</div>`;
         
-         return new DOMParser().parseFromString(html, 'text/html').body.childNodes[0];
+        return new DOMParser().parseFromString(html, 'text/html').body.childNodes[0];
 
     }
 
@@ -102,7 +101,16 @@ function Calendar(container, height) {
 
     Calendar.prototype.setEnabled = function(date) {
 
-        this.activeDates[date] = 0;
+        this.activeDates[`${date.getFullYear()}-${date.getMonth()}-${date.getDate()}`] = 0;
+       
+        var id = `${date.getFullYear()}-${date.getMonth()}-${date.getDate()}`;
+        var view = document.getElementById(`view-${id}`);
+
+        if (view) {
+            view.classList.remove('fa-eye-slash');
+            view.classList.remove('fa-eye');
+            view.classList.add('fa-eye');
+        }
 
     }
 

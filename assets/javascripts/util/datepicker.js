@@ -354,11 +354,13 @@ DatePicker.init = function (instances, listeners, element, instanceConfig) {
                     year: self.currentYearView
                 };
 
+                var currentDate = new Date(self.currentYearView, self.currentMonthView, self.selectedDate.day);
+
                 for (var listener in self.listeners) {
-                    self.listeners[listener](document.getElementById(self.wrapperElement.id), self.selectedDate);
+                    self.listeners[listener](document.getElementById(self.wrapperElement.id), currentDate);
                 }
                 
-                currentTimestamp = new Date(self.currentYearView, self.currentMonthView, self.selectedDate.day).getTime();
+                currentTimestamp = currentDate.getTime();
 
                 if (self.config.altInput) {
                     if (self.config.altFormat) {

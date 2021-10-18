@@ -160,7 +160,9 @@ let CALLBACKS = {
 };
 
 function updateDate(element, date) {
-    console.log(element, date);
+
+    calendar.setEnabled(date);
+    
 }
 
 $("#window-minimize").on('click', async(e) => {
