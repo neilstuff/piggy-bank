@@ -1,3 +1,5 @@
+var instances = {}
+
 function Calendar(container, height) {
     const l10n = {
         weekdays: {
@@ -12,6 +14,10 @@ function Calendar(container, height) {
         firstDayOfWeek: 0
     }
 
+    instances[container.id] = this;
+
+    this.listeners = {};
+
     this.container = container;
     this.height = height;
 
@@ -21,6 +27,7 @@ function Calendar(container, height) {
 
     this.createSimpleElement = function(type, id, className) {
         element = document.createElement(type);
+        
         if (id != undefined) {
             element.id = id;
         }
@@ -49,7 +56,7 @@ function Calendar(container, height) {
             `<label>${dayOfWeek}</label>` +
             `</div>` +
             `<div id="actions-${id}" style="display:inline-block; position: absolute; top:64px; font-size:10px; right:2px; height:10px; color:black; background-color:white; cursor:pointer;"` +
-                `onclick="Calendar.display('${date.getFullYear()}','${dayInMonth}');"> ` +
+                `onclick="Calendar.display('${this.container.id}', '${date.getFullYear()}','${dayInMonth}');"> ` +
                 `<div id="view-${id}" class="fas ${active ? 'fa-eye' : 'fa-eye-slash'}"></div>` +
             `</div>` +
         `</div>`;
@@ -66,10 +73,17 @@ function Calendar(container, height) {
         return l10n.weekdays.longhand[(new Date(year, month, day).getDay())];
     }
 
-    Calendar.display = function(year, dayInMonth) {
-        alert(`${year}, ${dayInMonth}`);
-    }
+    Calendar.display = function(id, year, dayInMonth) {
+        console.log(`${id}, ${year}, ${dayInMonth}`);
 
+        if ('display' in instances[id].listeners) {
+
+            instances[id].listeners['display'](year, dayInMonth);
+
+        }
+
+    }
+    
     Calendar.prototype.getMonthLong = function() {
         return `${l10n.months.longhand[this.date.getMonth()]}`;
     }
@@ -98,6 +112,12 @@ function Calendar(container, height) {
         }
 
     }
+
+    Calendar.prototype.addListener = function(type, listener) {
+
+        
+
+    };
 
     Calendar.prototype.setEnabled = function(date) {
 
