@@ -113,11 +113,35 @@ function Calendar(container, height) {
 
     }
 
+    Calendar.prototype.leftYear = function() {
+
+    }
+
+    Calendar.prototype.rightYear = function() {
+
+    }
+
     Calendar.prototype.addListener = function(type, listener) {
 
-        
-
     };
+
+    Calendar.prototype.display = function(year, month) {
+        var daysInMonth = this.daysInMonth(month, year);
+
+        this.container
+
+        for (var dayOfMonth = 1; dayOfMonth < daysInMonth + 1; dayOfMonth++) {
+            var node = this.createEntryNode(this.height,
+                                            new Date(this.date.getFullYear(), this.date.getMonth(), dayOfMonth),
+                                            dayOfMonth, 
+                                            this.dayDayOfWeek(dayOfMonth, 
+                                                            this.date.getMonth(), 
+                                                            this.date.getFullYear()),
+                                            this.activeDates);
+            
+            this.container.appendChild(node);
+
+    }
 
     Calendar.prototype.setEnabled = function(date) {
 
