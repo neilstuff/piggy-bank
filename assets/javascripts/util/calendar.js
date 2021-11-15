@@ -1,6 +1,7 @@
 var instances = {}
 
 function Calendar(container, height) {
+
     const l10n = {
         weekdays: {
             shorthand: ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'],
@@ -113,11 +114,35 @@ function Calendar(container, height) {
 
     }
 
-    Calendar.prototype.leftYear = function() {
+    Calendar.prototype.minusYear = function() {
+
+        this.date.setFullYear(this.date.getFullYear() - 1);
+
+        this.show(this.date);
 
     }
 
-    Calendar.prototype.rightYear = function() {
+    Calendar.prototype.addYear = function() {
+
+        this.date.setFullYear(this.date.getFullYear() + 1);
+
+        this.show(this.date);
+
+    }
+
+    Calendar.prototype.minusMonth = function() {
+
+        this.date.setMonth(this.date.getMonth() - 1);
+
+        this.show(this.date);
+
+    }
+
+    Calendar.prototype.addMonth = function() {
+
+        this.date.setMonth(this.date.getMonth() + 1);
+
+        this.show(this.date);
 
     }
 
@@ -125,10 +150,13 @@ function Calendar(container, height) {
 
     };
 
-    Calendar.prototype.display = function(year, month) {
-        var daysInMonth = this.daysInMonth(month, year);
+    Calendar.prototype.show = function(date) {
 
-        this.container
+        while (this.container.firstChild) {
+            this.container.removeChild(this.container.firstChild);
+        }
+
+        var daysInMonth = this.daysInMonth(date.getMonth(), date.getFullYear());
 
         for (var dayOfMonth = 1; dayOfMonth < daysInMonth + 1; dayOfMonth++) {
             var node = this.createEntryNode(this.height,
@@ -159,5 +187,11 @@ function Calendar(container, height) {
         }
 
     }
+
+}
+
+Calendar.display = function(id, year, month) {
+
+    console.log(id, year, month);
 
 }

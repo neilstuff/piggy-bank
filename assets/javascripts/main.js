@@ -162,7 +162,7 @@ let CALLBACKS = {
 function updateDate(element, date) {
 
     calendar.setEnabled(date);
-    
+
 }
 
 $("#window-minimize").on('click', async(e) => {
@@ -616,5 +616,30 @@ $(async() => {
     document.getElementById('calendar-month-year').innerHTML = `${calendar.getMonthLong()}/${calendar.getYear()}`;
 
     calendar.setup();
+
+    document.getElementById('left-calendar-year').addEventListener('click', e => {
+        console.log('left-calendar-year');
+        calendar.minusYear();
+        document.getElementById('calendar-month-year').innerHTML = `${calendar.getMonthLong()}/${calendar.getYear()}`;
+    });
+
+    document.getElementById('right-calendar-year').addEventListener('click', e => {
+        console.log('right-calendar-year');
+        calendar.addYear();
+        document.getElementById('calendar-month-year').innerHTML = `${calendar.getMonthLong()}/${calendar.getYear()}`;
+    });
+
+    document.getElementById('left-calendar-month').addEventListener('click', e => {
+        console.log('left-calendar-month');
+        calendar.minusMonth();
+        document.getElementById('calendar-month-year').innerHTML = `${calendar.getMonthLong()}/${calendar.getYear()}`;
+
+    });
+
+    document.getElementById('right-calendar-month').addEventListener('click', e => {
+        console.log('right-calendar-month');
+        calendar.addMonth();
+        document.getElementById('calendar-month-year').innerHTML = `${calendar.getMonthLong()}/${calendar.getYear()}`;
+    });
 
 });
