@@ -43,7 +43,9 @@ function Calendar(container, height) {
 
     this.createEntryNode = function(height, date, dayInMonth, dayOfWeek, activeDates) {
         var today = new Date();
-        var colour = date.getFullYear() == today.getFullYear() && date.getDate() == today.getDate() ?
+        var colour = date.getFullYear() == today.getFullYear() &&
+            date.getMonth() == today.getMonth() &&
+            date.getDate() == today.getDate() ?
             "rgba(255,0,0,1.0)" :
             "rgba(255,0,0,0.5)";
         var id = `${date.getFullYear()}-${date.getMonth()}-${date.getDate()}`;
