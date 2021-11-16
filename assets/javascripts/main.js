@@ -390,6 +390,8 @@ $.fn.Drop = (event) => {
 
 $.fn.OnInput = (field, id, value) => {
 
+    console.log(value);
+
     cards[tree.selectedNode.id][id][field] = value;
 
 }
@@ -464,13 +466,14 @@ $(async() => {
 
     $('#print').on('click', (e) => {
         let html = [];
-
         let footer = format.hasOwnProperty('footer') ? format['footer'] : "";
+
         text = `<html><style>td { min-width:100px;} ` +
             `.center { display: block; margin-left: auto; margin-right: auto; width: 50%; }` +
             `</style> <div id="footer" class="footer">${footer}</div><div style="font-family:Arial, Helvetica, sans-serif; font-size:14px;">${text}</div><html>`;
 
         $('#print-area').html(text);
+
         window.print();
 
     });
