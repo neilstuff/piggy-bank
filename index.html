@@ -35,7 +35,7 @@
                 <div style="font-size:12px; font-family:Arial, Helvetica, sans-serif; position:absolute; top:5px; bottom:0px; left:45px;">
                     <input style="font-size:12px; width:80%; margin-top:2px; margin-bottom:5px; border:none; border-bottom: 1px dashed rgba(0,0,0, 0.2); outline: none; background-color: transparent;" value="${merchant}" placeholder="merchant" oninput="$(this).OnInput('merchant', '${id}', this.value)"
                     />
-                    <input type="text" name="currency-field" style="font-size:12px; width:80%; border:none; border-bottom: 1px dashed rgba(0,0,0, 0.2); outline: none; margin-bottom:5px; background-color: transparent;" id="currency-field" pattern="^\$\d{1,3}(,\d{3})*(\.\d+)?$"
+                    <input type="text" id="amount-${id}" name="currency-field" style="font-size:12px; width:80%; border:none; border-bottom: 1px dashed rgba(0,0,0, 0.2); outline: none; margin-bottom:5px; background-color: transparent;" id="currency-field" pattern="^\$\d{1,3}(,\d{3})*(\.\d+)?$"
                         value="${amount}" data-type="currency" placeholder="$0.0" oninput="$(this).OnInput('amount', '${id}', this.value)" />
                 </div>
                 <div style="position:relative; margin-top:26px; left:5px; font-size:8px; font-family:Arial, Helvetica, sans-serif; ">
