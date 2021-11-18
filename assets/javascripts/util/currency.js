@@ -36,6 +36,10 @@ Currency.apply = function() {
             var left_side = input_val.substring(0, decimal_pos);
             var right_side = input_val.substring(decimal_pos);
     
+            if (right_side.length > 2) {
+                left_side = left_side + right_side.substring(0, right_side.length - 2);
+            }
+
             console.log(left_side, right_side);
 
             // add commas to left side of number
