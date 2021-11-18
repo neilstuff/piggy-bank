@@ -36,6 +36,8 @@ Currency.apply = function() {
             var left_side = input_val.substring(0, decimal_pos);
             var right_side = input_val.substring(decimal_pos);
     
+            console.log(left_side, right_side);
+
             // add commas to left side of number
             left_side = formatNumber(left_side);
     
@@ -73,16 +75,27 @@ Currency.apply = function() {
         // put caret back in the right position
         var updated_len = input_val.length;
         caret_pos = updated_len - original_len + caret_pos;
+
         input[0].setSelectionRange(caret_pos, caret_pos);
     }
 
     $("input[data-type='currency']").on({
-        keyup: function () {
-             formatCurrency($(this));
+        keydown: function (event) {
+            console.log(event.keyCode);
+            if (String.fromCharCode(event.keyCode) >= '0' && String.fromCharCode(event.keyCode) <= '9') {
+                formatCurrency($(this));
+                return true;
+            } else if (event.keyCode >= 37 && event.keyCode <= 40 || event.keyCode  == 8 || event.keyCode == 46) {
+                return true;
+            } else {
+                return false;
+            }
         },
         blur: function () {
             formatCurrency($(this), "blur");
+        },
+        input: function () {
+            console.log('input', $(this));
         }
     });
-
 }

@@ -390,7 +390,7 @@ $.fn.Drop = (event) => {
 
 $.fn.OnInput = (field, id, value) => {
 
-    console.log(value);
+    console.log(id, field, value, $(`#${field}-${id}`).val());
 
     cards[tree.selectedNode.id][id][field] = value;
 
