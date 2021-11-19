@@ -35,35 +35,36 @@ Currency.apply = function() {
             // split number by decimal point
             var left_side = input_val.substring(0, decimal_pos);
             var right_side = input_val.substring(decimal_pos);
-    
+            
+            console.log("Before:", left_side, ",", right_side);
+
             if (right_side.length > 2) {
                 left_side = left_side + right_side.substring(0, right_side.length - 2);
+                right_side = right_side.substring(right_side.length - 2, right_side.length);
+            } else if (right_side.length == 1) {
+                right_side = right_side + "0";
+            } else if (right_side.length == 0) {
+                right_side = right_side + "00";
             }
 
-            console.log(left_side, right_side);
+            left_side = left_side.replace(/^[0]+/g, "");
 
             // add commas to left side of number
             left_side = formatNumber(left_side);
     
             // validate right side
             right_side = formatNumber(right_side);
-    
-            // On blur make sure 2 numbers after decimal
-            if (blur === "blur") {
-                right_side += "00";
-            }
-    
+      
             // Limit decimal to only 2 digits
             right_side = right_side.substring(0, 2);
     
             // join number by .
             input_val = "$" + left_side + "." + right_side;
+
+            console.log("Computed:", input_val, ",", left_side, ",", right_side);
     
         } else {
-            // no decimal entered
-            // add commas to number
-            // remove all non-digits
-            input_val = formatNumber(input_val);
+             input_val = formatNumber(input_val);
             input_val = "$" + input_val;
     
             // final formatting
@@ -88,8 +89,10 @@ Currency.apply = function() {
             console.log(event.keyCode);
             if (String.fromCharCode(event.keyCode) >= '0' && String.fromCharCode(event.keyCode) <= '9') {
                 formatCurrency($(this));
+            } else if (event.keyCode >= 37 && event.keyCode <= 40 ) { 
                 return true;
-            } else if (event.keyCode >= 37 && event.keyCode <= 40 || event.keyCode  == 8 || event.keyCode == 46) {
+            } else if (event.keyCode  == 8 || event.keyCode == 46) {
+                formatCurrency($(this));
                 return true;
             } else {
                 return false;
@@ -99,7 +102,7 @@ Currency.apply = function() {
             formatCurrency($(this), "blur");
         },
         input: function () {
-            console.log('input', $(this));
+            formatCurrency($(this));
         }
     });
 }
