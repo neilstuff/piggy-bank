@@ -390,8 +390,19 @@ $.fn.Drop = (event) => {
 
 $.fn.OnInput = (field, id, value) => {
 
+    console.log(value);
+    console.log(cards[tree.selectedNode.id][id]);
+ 
+    var date = new Date(cards[tree.selectedNode.id][id]['date']);
+
+    var entry = `${date.getFullYear()}-${date.getMonth()}-${date.getDate()}`;
+
+    console.log(entry);
+
     cards[tree.selectedNode.id][id][field] = value;
 
+   $(`#label-${entry}`).html(value);
+ 
 }
 
 $.fn.OnCardDrop = (event) => {}

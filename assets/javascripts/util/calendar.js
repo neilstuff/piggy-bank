@@ -58,7 +58,7 @@ function Calendar(container, height) {
             ` text-align:center; border-top:dotted 1px white; padding-top: 2px;">` +
             `<label>${dayOfWeek}</label>` +
             `</div>` +
-            `<label id="label-${id}" style="display:inline-block; position: absolute; top:52px; font-size:10px; right:3px; margin-left:5px;"></label>` +
+            `<label id="label-${id}" style="display:inline-block; position: absolute; top:52px; font-size:10px; right:3px; margin-left:5px;">$0.00</label>` +
             `<div id="actions-${id}" style="display:inline-block; position: absolute; top:64px; font-size:10px; right:2px; height:10px; color:black; background-color:white; cursor:pointer;"` +
             `onclick="Calendar.display('${this.container.id}', '${date.getFullYear()}','${dayInMonth}');"> ` +
                `<div id="view-${id}" class="fas ${active ? 'fa-eye' : 'fa-eye-slash'}"></div>` +
