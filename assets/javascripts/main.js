@@ -392,7 +392,7 @@ $.fn.OnInput = (field, id, value) => {
 
     console.log(value);
     console.log(cards[tree.selectedNode.id][id]);
- 
+
     var date = new Date(cards[tree.selectedNode.id][id]['date']);
 
     var entry = `${date.getFullYear()}-${date.getMonth()}-${date.getDate()}`;
@@ -401,8 +401,8 @@ $.fn.OnInput = (field, id, value) => {
 
     cards[tree.selectedNode.id][id][field] = value;
 
-   $(`#label-${entry}`).html(value);
- 
+    $(`#label-${entry}`).html(value);
+
 }
 
 $.fn.OnCardDrop = (event) => {}
@@ -630,7 +630,7 @@ $(async() => {
     calendar.setup();
 
     document.getElementById('left-calendar-year').addEventListener('click', e => {
-         calendar.minusYear();
+        calendar.minusYear();
         document.getElementById('calendar-month-year').innerHTML = `${calendar.getMonthLong()}/${calendar.getYear()}`;
     });
 
