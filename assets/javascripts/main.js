@@ -123,6 +123,10 @@ let CALLBACKS = {
         let template = $('script[data-template="card-item"]').text();
 
         for (let id in cards[node.id]) {
+            
+            console.log(cards[tree.selectedNode.id][id].date + ":" + calendar.getDate());
+
+            var date = new Date(cards[tree.selectedNode.id][id].date);
 
             let value = $(this).Substitute(template, {
                 id: id,
@@ -628,6 +632,35 @@ $(async() => {
     document.getElementById('calendar-month-year').innerHTML = `${calendar.getMonthLong()}/${calendar.getYear()}`;
 
     calendar.setup();
+    calendar.addListener("display", function(calendar, id, year, dayInMonth) {
+
+        $('#receipt-container').html('');
+        let template = $('script[data-template="card-item"]').text();
+
+        for (let card in cards[tree.selectedNode.id]) {
+            
+            console.log(cards[tree.selectedNode.id][card].date + ":" + calendar.getDate());
+
+            var date = new Date(cards[tree.selectedNode.id][card].date);
+
+            let value = $(this).Substitute(template, {
+                id: id,
+                merchant: cards[tree.selectedNode.id][card].merchant,
+                amount: cards[tree.selectedNode.id][card].amount,
+                date: cards[tree.selectedNode.id][card].date,
+                type: cards[tree.selectedNode.id][card].type,
+                icon: cards[tree.selectedNode.id][card].type == 'income' ? 'fa-piggy-bank' : 'fa-donate'
+            });
+
+            $('#receipt-container').html($('#receipt-container').html() + value);
+
+        }
+
+        for (let card in cards[tree.selectedNode.id]) {
+            picker.decorate(document.getElementById(`date-${card}`));
+        }
+
+    });
 
     document.getElementById('left-calendar-year').addEventListener('click', e => {
         calendar.minusYear();

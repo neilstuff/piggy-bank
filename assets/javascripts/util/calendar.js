@@ -13,6 +13,26 @@ function Calendar(container, height) {
         },
         daysInMonth: [31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31],
         firstDayOfWeek: 0
+    
+    }
+
+    document.calendar_display = function(calendarId, id, year, month, dayInMonth) {
+      
+        if ('display' in instances[calendarId].listeners) {
+
+            instances[calendarId].listeners['display'](instances[calendarId], id, year, dayInMonth);
+
+        }
+
+        instances[calendarId].setEnabled(instances[calendarId].date, false);
+
+
+        var date = new Date(year, month, dayInMonth);
+
+        instances[calendarId].setEnabled(date, true);
+
+        instances[calendarId].date = date;
+
     }
 
     instances[container.id] = this;
@@ -50,19 +70,19 @@ function Calendar(container, height) {
             "rgba(255,0,0,0.5)";
         var id = `${date.getFullYear()}-${date.getMonth()}-${date.getDate()}`;
         var active = `${id}` in activeDates;
-        var html = `<div style="display:inline-block; position: relative; width:70px; height:${height}px; border:1px solid rgba(0,0,0,0.5); margin:10px;">` +
+        var html = `<div style="display:inline-block; position: relative; width:70px; height:${height}px; border:1px solid rgba(0,0,0,0.5); margin:10px; cursor: pointer"` + 
+            ` onclick="document.calendar_display('${this.container.id}', '${id}', '${date.getFullYear()}','${date.getMonth()}', '${dayInMonth}');">` +
             `<div style="display:inline-block; position: absolute; left:0px; top:0px;  width:70px; height:26px; color:white; background-color:${colour}; text-align:center">` +
-            `<label>${dayInMonth}</label>` +
-            `</div>` +
-            `<div style="display:inline-block; position: absolute; top:25px; font-size:10px; left:0px; width:70px; height:20px; color:white; background-color:${colour};` +
-            ` text-align:center; border-top:dotted 1px white; padding-top: 2px;">` +
-            `<label>${dayOfWeek}</label>` +
-            `</div>` +
-            `<label id="label-${id}" style="display:inline-block; position: absolute; top:52px; font-size:10px; right:3px; margin-left:5px;">$0.00</label>` +
-            `<div id="actions-${id}" style="display:inline-block; position: absolute; top:64px; font-size:10px; right:2px; height:10px; color:black; background-color:white; cursor:pointer;"` +
-            `onclick="Calendar.display('${this.container.id}', '${date.getFullYear()}','${dayInMonth}');"> ` +
-               `<div id="view-${id}" class="fas ${active ? 'fa-eye' : 'fa-eye-slash'}"></div>` +
-            `</div>` +
+                `<label>${dayInMonth}</label>` +
+                `</div>` +
+                `<div style="display:inline-block; position: absolute; top:25px; font-size:10px; left:0px; width:70px; height:20px; color:white; background-color:${colour};` +
+                    ` text-align:center; border-top:dotted 1px white; padding-top: 2px;">` +
+                     `<label>${dayOfWeek}</label>` +
+                `</div>` +
+                `<label id="label-${id}" style="display:inline-block; position: absolute; top:52px; font-size:10px; right:3px; margin-left:5px;">$0.00</label>` +
+                `<div id="actions-${id}" style="display:inline-block; position: absolute; top:64px; font-size:10px; right:2px; height:10px; color:black; background-color:white; cursor:pointer; padding-left:2px;"> ` +         
+                    `<div id="view-${id}" style="height:5px; width:65px; border-bottom: 4px solid ${active ? 'rgba(255,0,0,0.4)' : 'rgba(255,255,255,1.0)'}"></div>` +           
+                `</div>` +
             `</div>`;
 
         return new DOMParser().parseFromString(html, 'text/html').body.childNodes[0];
@@ -75,17 +95,6 @@ function Calendar(container, height) {
 
     this.dayDayOfWeek = function(day, month, year) {
         return l10n.weekdays.longhand[(new Date(year, month, day).getDay())];
-    }
-
-    Calendar.prototype.display = function(id, year, dayInMonth) {
-        console.log(`${id}, ${year}, ${dayInMonth}`);
-
-        if ('display' in instances[id].listeners) {
-
-            instances[id].listeners['display'](year, dayInMonth);
-
-        }
-
     }
 
     Calendar.prototype.getMonthLong = function() {
@@ -149,10 +158,6 @@ function Calendar(container, height) {
 
     }
 
-    Calendar.prototype.addListener = function(type, listener) {
-
-    };
-
     Calendar.prototype.show = function(date) {
 
         while (this.container.firstChild) {
@@ -176,7 +181,7 @@ function Calendar(container, height) {
 
     }
 
-    Calendar.prototype.setEnabled = function(date) {
+    Calendar.prototype.setEnabled = function(date, enabled) {
 
         this.activeDates[`${date.getFullYear()}-${date.getMonth()}-${date.getDate()}`] = 0;
 
@@ -184,17 +189,21 @@ function Calendar(container, height) {
         var view = document.getElementById(`view-${id}`);
 
         if (view) {
-            view.classList.remove('fa-eye-slash');
-            view.classList.remove('fa-eye');
-            view.classList.add('fa-eye');
+            view.style.borderBottom = (enabled) ? "4px solid rgba(255,0,0,0.4)" : "4px solid rgba(255,255,255,1.0)";
         }
 
     }
 
-}
+    Calendar.prototype.addListener  = function(type, listener) {
 
-Calendar.display = function(id, year, month) {
+        this.listeners[type] = listener;
 
-    console.log(id, year, month);
+    }
+
+    Calendar.prototype.getDate = function() {
+
+        return this.date;
+
+    }
 
 }

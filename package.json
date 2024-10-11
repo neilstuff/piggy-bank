@@ -30,14 +30,14 @@
     "dependencies": {
         "ejs": "^3.0.2",
         "mime": "^2.0.4",
-        "jquery": "^3.6.0",
+        "jquery": "^3.7.1",
         "@fortawesome/fontawesome-free": "^5.13.0",
         "jszip": "^3.4.0",
         "file-saver": "^2.0.2",
-        "node": "^16.9.1"
+        "node": "^22.7.0"
     },
     "devDependencies": {
-        "electron": "^15.1.2",
-        "electron-builder": "^22.13.1"
+        "electron": "^32.0.1",
+        "electron-builder": "24.13.3"
     }
 }

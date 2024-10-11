@@ -29,7 +29,6 @@ function createWindow() {
         resizable: true,
         frame: false,
         autoHideMenuBar: true,
-
         webPreferences: {
             nodeIntegration: false,
             contextIsolation: true,
@@ -44,12 +43,7 @@ function createWindow() {
     }
 
     mainWindow.setMenu(null);
-    mainWindow.setTitle('Piggy Bank') 
-    mainWindow.loadURL(url.format({
-        pathname: path.join(__dirname, 'index.html'),
-        protocol: 'html',
-        slashes: true
-    }))
+    mainWindow.loadURL(`file:///${path.join(__dirname, 'index.html')}`);
 
     mainWindow.on('closed', () => {
         mainWindow = null
