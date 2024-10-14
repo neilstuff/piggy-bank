@@ -2,7 +2,6 @@ let cards = {};
 let markers = {};
 let format = {};
 let tree = null;
-let picker = new DatePicker();
 let calendar = new Calendar($('#calendar-container-days')[0], 80);
 
 let year = null;
@@ -139,10 +138,6 @@ let CALLBACKS = {
 
             $('#receipt-container').html($('#receipt-container').html() + value);
 
-        }
-
-        for (let id in cards[node.id]) {
-            picker.decorate(document.getElementById(`date-${id}`));
         }
 
     },
@@ -401,8 +396,6 @@ $.fn.OnInput = (field, id, value) => {
 
     var entry = `${date.getFullYear()}-${date.getMonth()}-${date.getDate()}`;
 
-    console.log(entry);
-
     cards[tree.selectedNode.id][id][field] = value;
 
     $(`#label-${entry}`).html(value);
@@ -495,7 +488,9 @@ $(async() => {
         let template = $('script[data-template="card-item"]').text();
         let id = $(this).GetID();
         let date = new Date();
-        let dateFormatter = new DateFormatter('F j, Y', (new Date()).getTime());
+        let dateFormatter = new DateFormatter('yy-m-d', (new Date()).getTime());
+
+        console.log(`Formatted Date: ${dateFormatter.formattedDate}`)
         if (cards[tree.selectedNode.id] == undefined) {
             cards[tree.selectedNode.id] = {};
         }
@@ -519,9 +514,6 @@ $(async() => {
         let fragment = document.createRange().createContextualFragment(value);
 
         $('#receipt-container')[0].appendChild(fragment);
-
-        picker.decorate(document.getElementById(`date-${id}`));
-        picker.addEventListener(updateDate);
 
         Currency.apply();
 
@@ -557,8 +549,6 @@ $(async() => {
         let fragment = document.createRange().createContextualFragment(value);
 
         $('#receipt-container')[0].appendChild(fragment);
-
-        picker.decorate(document.getElementById(`date-${id}`));
 
         Currency.apply();
 
@@ -632,7 +622,7 @@ $(async() => {
     document.getElementById('calendar-month-year').innerHTML = `${calendar.getMonthLong()}/${calendar.getYear()}`;
 
     calendar.setup();
-    calendar.addListener("display", function(calendar, id, year, dayInMonth) {
+    calendar.addListener("display", function(calendar, id, year, month, dayInMonth) {
 
         $('#receipt-container').html('');
         let template = $('script[data-template="card-item"]').text();
@@ -654,10 +644,6 @@ $(async() => {
 
             $('#receipt-container').html($('#receipt-container').html() + value);
 
-        }
-
-        for (let card in cards[tree.selectedNode.id]) {
-            picker.decorate(document.getElementById(`date-${card}`));
         }
 
     });

@@ -20,17 +20,14 @@ function Calendar(container, height) {
       
         if ('display' in instances[calendarId].listeners) {
 
-            instances[calendarId].listeners['display'](instances[calendarId], id, year, dayInMonth);
+            instances[calendarId].listeners['display'](instances[calendarId], id, year, month, dayInMonth);
 
         }
 
-        instances[calendarId].setEnabled(instances[calendarId].date, false);
-
-
         var date = new Date(year, month, dayInMonth);
 
+        instances[calendarId].setEnabled(instances[calendarId].date, false);
         instances[calendarId].setEnabled(date, true);
-
         instances[calendarId].date = date;
 
     }
